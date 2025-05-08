@@ -1,0 +1,69 @@
+# Define the services (containers) that make up your application
+services:
+
+  # Name the service
+  calculator:
+
+    # Build this service using a Dockerfile in the current directory
+    build:
+      dockerfile: Dockerfile
+    
+    # Expose container port 3000 on host port 3000
+    ports:
+      - "3000:3000"
+    
+    # Define the environment required variables
+    environment:
+      - MONGO_USERNAME=calcuser
+      - MONGO_PASSWORD=calcpassword
+      - MONGO_DATABASE=calculatordb
+      - MONGO_HOST=mongodb
+
+    # Adds a service dependency
+    depends_on:
+      - mongodb
+    
+    # Define health check to monitor container status
+    healthcheck:
+
+      # The test command to run inside the container
+      test: ["CMD", "curl", "-f", "http://localhost:3000/history"]
+
+       # Run the health check every 30 seconds
+      interval: 30s
+
+      # Allow up to 10 seconds for the health check to complete
+      timeout: 10s
+
+      # Container is marked unhealthy after 3 consecutive failures
+      retries: 3
+
+      # Initial grace period after container starts before beginning health checks
+      start_period: 5s
+    
+    # Restart policy defines when Docker should automatically restart the container
+    restart: on-failure
+  
+  # Name of the Database service
+  mongodb:
+
+    # Pulls the latest MongoDB image
+    image: mongo:latest
+
+    # Expose container port 27017 on host port 27017
+    ports:
+      - "27017:27017"
+    
+    # Define the environment required variables
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=calcuser
+      - MONGO_INITDB_ROOT_PASSWORD=calcpassword
+      - MONGO_INITDB_DATABASE=calculatordb
+    
+    # Creates a data volume for storage at the specified path in the container
+    volumes:
+      - mongodb_data:/data/db
+
+# Declare the data volume to use
+volumes:
+  mongodb_data:
