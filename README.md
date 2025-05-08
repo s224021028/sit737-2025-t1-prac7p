@@ -4,6 +4,7 @@
 To run this microservice, you need to have the following installed:
 - Node.js
 - npm
+- mongodb image on Docker
 
 ## Installation
 - Clone the repository:
@@ -21,7 +22,7 @@ The server will run on port 3000 by default and log a startup message.
 To run this microservice from an image, you need to have Docker installed
 
 - Build the image with:
-```docker build -t sit737-2025-prac5p-calculator-1 .```
+```docker build -t sit737-2025-t1-prac7p-calculator-1 .```
 
 - Start the service with:
 ```docker-compose up```
@@ -33,8 +34,8 @@ To run this microservice from an image, you need to have Docker installed
 ```docker-compose down```
 
 - Tag and Push the image to a registry (Docker Hub) with:
-```docker tag sit737-2025-prac5p-calculator-1 s224021028/sit737-2025-prac5p-calculator-1```<br><br>
-```docker push s224021028/sit737-2025-prac5p-calculator-1```
+```docker tag sit737-2025-t1-prac7p-calculator-1 s224021028/sit737-2025-t1-prac7p-calculator-1```<br><br>
+```docker push s224021028/sit737-2025-t1-prac7p-calculator-1```
 
 ### Google Cloud Artifact Registry
 To push the built image to cloud
@@ -49,8 +50,8 @@ To push the built image to cloud
 ```docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token)" australia-southeast2-docker.pkg.dev/sit737-25t1-jarjana-785f7a0/s224021028-ar```
 
 - Tag and push the image to Google ACR with:
-```docker tag s224021028/sit737-2025-prac5p-calculator australia-southeast2-docker.pkg.dev/sit737-25t1-jarjana-785f7a0/s224021028-ar/s224021028/sit737-2025-prac5p-calculator:latest```<br><br>
-```docker push australia-southeast2-docker.pkg.dev/sit737-25t1-jarjana-785f7a0/s224021028-ar/s224021028/sit737-2025-prac5p-calculator:latest```
+```docker tag s224021028/sit737-2025-prac5p-calculator australia-southeast2-docker.pkg.dev/sit737-25t1-jarjana-785f7a0/s224021028-ar/s224021028/sit737-2025-t1-prac7p-calculator:latest```<br><br>
+```docker push australia-southeast2-docker.pkg.dev/sit737-25t1-jarjana-785f7a0/s224021028-ar/s224021028/sit737-2025-t1-prac7p-calculator:latest```
 
 ### Create and Configure a Kubernetes cluster
 To create and configure a Kubernetes cluster on GCP
@@ -64,10 +65,36 @@ To create and configure a Kubernetes cluster on GCP
 ```kubectl config current-context```
 
 ### Deploy app to Kubernetes GCP
+To deploy MongoDB to GCP
+
+- Create the db-pv, db-pvc files for persistent storage on the Cluster.
+- Create the db-secrets.yaml for database sensitive information like username, password and database name.
+- Create the db-back.yaml file for defining a CronJob for database backup.
+- Create the db-deployment.yaml and db-service.yaml files.
+- Apply the persistent volume with:
+```kubectl apply -f db-pv.yaml```
+```kubectl apply -f db-pvc.yaml```
+- Apply the secrets with:
+```kubectl apply -f db-secrets.yaml```
+- Apply the backup with:
+```kubectl apply -f db-backup.yaml```
+- Apply the deployment and service with:
+```kubectl apply -f db-deployment.yaml```
+```kubectl apply -f db-service.yaml```
+- Check the running pod with:
+```kubectl get pods```
+- Check the service with:
+```kubectl get services```
+- Check database logs with:
+```kubectl logs <pod_name>```
+- Check the status of the backup with:
+```kubectl get cronjobs```
+```kubectl get jobs```
+
 To deploy an app to GCP Kubernetes
 
-- Create the deployment.yaml file
-- Create the service.yaml file
+- Create the app-deployment.yaml file
+- Create the app-service.yaml file
 - Apply the deployment with:
 ```kubectl apply -f deployment.yaml```
 - Apply the service with:
@@ -90,6 +117,8 @@ To test the microservice, you can:
 - Exponent: http://localhost:3000/exp?num1=2&num2=8
 - Square root: http://localhost:3000/sqrt?num1=35
 - Modulo: http://localhost:3000/mod?num1=60&num2=9
+- Calculation history: http://localhost:3000/history
+- Delete history: http://localhost:3000/deletehistory
 
 ## Testing the Microservice on Kubernetes Cluster Pod
 To test the microservice, you can:
@@ -101,6 +130,8 @@ To test the microservice, you can:
 - Exponent: http://external-ip:3000/exp?num1=2&num2=8
 - Square root: http://external-ip:3000/sqrt?num1=35
 - Modulo: http://external-ip:3000/mod?num1=60&num2=9
+- Calculation history: http://external-ip:3000/history
+- Delete history: http://external-ip:3000/deletehistory
 
 <b>Check the logs:</b>
 
